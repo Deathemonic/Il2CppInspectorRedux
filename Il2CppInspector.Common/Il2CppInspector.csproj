@@ -2,31 +2,56 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>preview</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    
+    <!-- Assembly Configuration -->
     <AssemblyName>Il2CppInspector.Common</AssemblyName>
+    <RootNamespace>Il2CppInspector</RootNamespace>
+    
+    <!-- Library Packaging Configuration -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Package Metadata -->
+    <PackageId>Il2CppInspector</PackageId>
+    <Title>Il2CppInspector Library</Title>
     <Authors>Katy Coe</Authors>
-    <Version>2023.1</Version>
     <Company>Noisy Cow Studios</Company>
-    <Product>Il2CppInspector Shared Library</Product>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-    <PackageId>NoisyCowStudios.Il2CppInspector</PackageId>
-    <Description>Unity IL2CPP application reverse engineering framework
-</Description>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Product>Il2CppInspector Library</Product>
+    <Version>2024.1.0</Version>
+    <AssemblyVersion>2024.1.0.0</AssemblyVersion>
+    <FileVersion>2024.1.0.0</FileVersion>
+    <Description>Unity IL2CPP application reverse engineering framework library for programmatic analysis of IL2CPP binaries and metadata. Supports extraction of type definitions, method signatures, and generation of C#, C++, and Python output.</Description>
+    <Summary>Library for analyzing Unity IL2CPP applications and generating reverse engineering artifacts</Summary>
     <PackageProjectUrl>https://github.com/djkaty/Il2CppInspector</PackageProjectUrl>
     <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/djkaty/Il2CppInspector</RepositoryUrl>
-    <PackageTags>IL2CPP;Unity;Reverse Engineering;Metadata</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>IL2CPP;Unity;Reverse-Engineering;Metadata;Analysis;Library;Decompilation</PackageTags>
+    <PackageReleaseNotes>Library-only version of Il2CppInspector for programmatic integration</PackageReleaseNotes>
+    <Copyright>Copyright (c) 2024 Katy Coe</Copyright>
+    
+    <!-- Build Configuration -->
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,8 +70,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Include Bin2Object as a private asset that gets packaged with the library -->
     <ProjectReference Include="..\Bin2Object\Bin2Object\Bin2Object.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\VersionedSerialization.Generator\VersionedSerialization.Generator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    
+    <!-- Include VersionedSerialization.Generator as an analyzer -->
+    <ProjectReference Include="..\VersionedSerialization.Generator\VersionedSerialization.Generator.csproj" 
+                      ReferenceOutputAssembly="false" 
+                      OutputItemType="Analyzer" 
+                      PrivateAssets="all" />
+    
+    <!-- Include VersionedSerialization as a packaged dependency -->
     <ProjectReference Include="..\VersionedSerialization\VersionedSerialization.csproj" />
   </ItemGroup>
 
@@ -65,9 +98,18 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Custom target to include project references in the NuGet package -->
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
+      <!-- Include all project reference outputs in the package -->
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Ensure analyzers are properly packaged -->
+  <Target Name="GetAnalyzerPackFiles">
+    <ItemGroup>
+      <AnalyzerPackFile Include="@(Analyzer)" />
     </ItemGroup>
   </Target>
 

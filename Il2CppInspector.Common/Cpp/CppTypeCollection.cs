@@ -7,7 +7,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -441,10 +440,9 @@ namespace Il2CppInspector.Cpp
                     if (enumValue.Groups[2].Captures.Count > 0) {
                         // Convert the text to a ulong even if it's hexadecimal with a 0x prefix
                         var valueText = enumValue.Groups[2].Captures[0].ToString();
-                        var conv = new Int64Converter();
 
                         // Handle bit shift operator
-                        var values = valueText.Split("<<").Select(t => (long) conv.ConvertFromInvariantString(t.Trim())).ToArray();
+                        var values = valueText.Split("<<").Select(t => Convert.ToInt64(t.Trim(), t.Trim().StartsWith("0x") ? 16 : 10)).ToArray();
                         value = values.Length == 1 ? values[0] : values[0] << (int)values[1];
                         nextEnumValue = value + 1;
                     }
