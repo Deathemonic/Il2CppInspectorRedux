@@ -57,7 +57,7 @@ namespace Il2CppInspector.Cpp.UnityHeaders
         public int BuildNumber { get; }
 
         public UnityVersion(string versionString) {
-            var match = VersionRegex().Match(versionString);
+            var match = VersionRegex.Match(versionString);
             if (!match.Success)
                 throw new ArgumentException($"'${versionString}' is not a valid Unity version number.");
             Major = int.Parse(match.Groups[1].Value);
@@ -143,8 +143,7 @@ namespace Il2CppInspector.Cpp.UnityHeaders
 
         public override int GetHashCode() => HashCode.Combine(Major, Minor, Update, BuildType, BuildNumber);
 
-        [GeneratedRegex(@"^(\d+)\.(\d+)(?:\.(\d+))?(?:([a-zA-Z]+)(\d+))?$")]
-        private static partial Regex VersionRegex();
+        private static readonly Regex VersionRegex = new(@"^(\d+)\.(\d+)(?:\.(\d+))?(?:([a-zA-Z]+)(\d+))?$");
     }
 
     // A range of Unity versions

@@ -344,7 +344,7 @@ namespace Il2CppInspector
                     }
                     catch (InvalidOperationException)
                     {
-                        MethodInvokerIndices.Add(module, [..new int[(int)module.MethodPointerCount]]);
+                        MethodInvokerIndices.Add(module, new int[(int)module.MethodPointerCount].ToImmutableArray());
                     }
                 }
             }
@@ -397,8 +397,8 @@ namespace Il2CppInspector
 
                 }
 
-                var definitionSize = (ulong)Il2CppTypeDefinition.Size(Image.Version);
-                var genericParameterSize = (ulong)Il2CppGenericParameter.Size(Image.Version);
+                var definitionSize = (ulong)new Il2CppTypeDefinition().Size(Image.Version);
+                var genericParameterSize = (ulong)new Il2CppGenericParameter().Size(Image.Version);
 
                 var builder = ImmutableArray.CreateBuilder<Il2CppType>(TypeReferences.Length);
                 for (var i = 0; i < TypeReferences.Length; i++)

@@ -7,12 +7,22 @@ namespace Il2CppInspector.Next.Metadata;
 
 using StringIndex = int;
 
-[InlineArray(PublicKeyLength)]
-public struct PublicKeyToken
+public unsafe struct PublicKeyToken
 {
     private const int PublicKeyLength = 8;
 
-    private byte _value;
+    public fixed byte Value[PublicKeyLength];
+
+    public byte[] ToArray()
+    {
+        var result = new byte[PublicKeyLength];
+        fixed (byte* ptr = Value)
+        {
+            for (int i = 0; i < PublicKeyLength; i++)
+                result[i] = ptr[i];
+        }
+        return result;
+    }
 }
 
 [VersionedStruct]

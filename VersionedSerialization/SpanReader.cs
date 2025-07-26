@@ -7,7 +7,7 @@ using System.Text;
 namespace VersionedSerialization;
 
 // ReSharper disable ReplaceSliceWithRangeIndexer | The range indexer gets compiled into .Slice(x, y) and not .Slice(x) which worsens performance
-public ref struct SpanReader(ReadOnlySpan<byte> data, int offset = 0, bool littleEndian = true, bool is32Bit = false) : IReader
+public ref struct SpanReader(ReadOnlySpan<byte> data, int offset = 0, bool littleEndian = true, bool is32Bit = false)
 {
     public int Offset = offset;
     public readonly byte Peek => _data[Offset];
@@ -97,7 +97,7 @@ public ref struct SpanReader(ReadOnlySpan<byte> data, int offset = 0, bool littl
     public T ReadVersionedObject<T>(in StructVersion version = default) where T : IReadable, new()
     {
         var obj = new T();
-        obj.Read(ref this, in version);
+        obj.ReadFromSpan(ref this, in version);
         return obj;
     }
 

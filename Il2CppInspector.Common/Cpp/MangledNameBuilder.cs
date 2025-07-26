@@ -148,7 +148,7 @@ public class MangledNameBuilder
                     "Char" => 'w',
                     "Single" => 'f',
                     "Double" => 'd',
-                    _ => throw new UnreachableException()
+                    _ => throw new InvalidOperationException("Unreachable code")
                 });
             }
         }
@@ -212,13 +212,12 @@ internal static partial class MangledRegex
     {
         get
         {
-            _gcc ??= GccNameRegex();
+            _gcc ??= GccNameRegex;
             return _gcc;
         }
     }
 
     private static Regex? _gcc;
 
-    [GeneratedRegex("[^a-zA-Z0-9_]")]
-    public static partial Regex GccNameRegex();
+    public static readonly Regex GccNameRegex = new("[^a-zA-Z0-9_]");
 }

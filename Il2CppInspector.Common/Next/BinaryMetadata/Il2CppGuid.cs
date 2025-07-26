@@ -6,13 +6,19 @@ public record struct Il2CppGuid : IReadable
 {
     public Guid Value;
 
-    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader, allows ref struct
+    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader
     {
         var guid = reader.ReadBytes(16);
-        Value = new Guid(guid, false);
+        Value = new Guid(guid.ToArray());
     }
 
-    public static int Size(in StructVersion version = default, bool is32Bit = false)
+    public void ReadFromSpan(ref SpanReader reader, in StructVersion version = default)
+    {
+        var guid = reader.ReadBytes(16);
+        Value = new Guid(guid.ToArray());
+    }
+
+    public int Size(in StructVersion version = default, bool is32Bit = false)
     {
         return 16;
     }

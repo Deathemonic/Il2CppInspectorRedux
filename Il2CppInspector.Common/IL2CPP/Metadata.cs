@@ -231,6 +231,9 @@ namespace Il2CppInspector
                 CopyTo(outFile);
         }
 
-        public int Sizeof<T>() where T : IReadable => T.Size(Version, Is32Bit);
+        public int Sizeof<T>() where T : IReadable, new() {
+            var version = Version;
+            return new T().Size(in version, Is32Bit);
+        }
     }
 }

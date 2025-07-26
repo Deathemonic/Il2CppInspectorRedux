@@ -12,12 +12,17 @@ public struct PrimitivePointer<T>(ulong value = 0) : IReadable, IEquatable<Primi
     public readonly ulong PointerValue => _value;
     public readonly bool Null => _value == 0;
 
-    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader, allows ref struct
+    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader
     {
         _value = reader.ReadNUInt();
     }
 
-    public static int Size(in StructVersion version = default, bool is32Bit = false)
+    public void ReadFromSpan(ref SpanReader reader, in StructVersion version = default)
+    {
+        _value = reader.ReadNUInt();
+    }
+
+    public int Size(in StructVersion version = default, bool is32Bit = false)
     {
         return is32Bit ? 4 : 8;
     }

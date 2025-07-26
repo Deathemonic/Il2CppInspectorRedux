@@ -5,7 +5,7 @@ namespace VersionedSerialization;
 public static class ReaderExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ReadCompressedUInt<T>(this ref T reader) where T : struct, IReader, allows ref struct
+    public static uint ReadCompressedUInt<T>(this ref T reader) where T : struct, IReader
     {
         var first = reader.ReadPrimitive<byte>();
 
@@ -28,7 +28,7 @@ public static class ReaderExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ReadCompressedInt<T>(this ref T reader) where T : struct, IReader, allows ref struct
+    public static int ReadCompressedInt<T>(this ref T reader) where T : struct, IReader
     {
         var value = reader.ReadCompressedUInt();
         if (value == uint.MaxValue)
@@ -41,7 +41,7 @@ public static class ReaderExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ReadSLEB128<T>(this ref T reader) where T : struct, IReader, allows ref struct
+    public static ulong ReadSLEB128<T>(this ref T reader) where T : struct, IReader
     {
         var value = 0uL;
         var shift = 0;

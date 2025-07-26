@@ -60,7 +60,7 @@ namespace Il2CppInspector.Reflection {
             var culture = Model.Package.Strings[nameDef.CultureIndex];
             if (string.IsNullOrEmpty(culture))
                 culture = "neutral";
-            var pkt = Convert.ToHexString(nameDef.PublicKeyToken);
+            var pkt = Convert.ToHexString(nameDef.PublicKeyToken.ToArray());
             if (pkt == "0000000000000000")
                 pkt = "null";
             var version = string.Format($"{nameDef.Major}.{nameDef.Minor}.{nameDef.Build}.{nameDef.Revision}");

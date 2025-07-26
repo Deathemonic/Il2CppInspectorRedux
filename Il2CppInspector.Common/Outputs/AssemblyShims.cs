@@ -64,7 +64,7 @@ namespace Il2CppInspector.Outputs
                     string str => new CAArgument(module.CorLibTypes.String, str),
                     int i => new CAArgument(module.CorLibTypes.Int32, i),
                     bool b => new CAArgument(module.CorLibTypes.Boolean, b),
-                    _ => throw new UnreachableException()
+                    _ => throw new InvalidOperationException("Unreachable code")
                 };
             }
         }

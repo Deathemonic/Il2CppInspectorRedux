@@ -82,7 +82,7 @@ namespace VersionedSerialization.Generator
 
         private static void GenerateSizeMethod(CodeGenerator generator, ObjectSerializationInfo info)
         {
-            generator.EnterScope("public static int Size(in StructVersion version = default, bool is32Bit = false)");
+            generator.EnterScope("public int Size(in StructVersion version = default, bool is32Bit = false)");
 
             if (!info.CanGenerateSizeMethod)
             {
@@ -112,10 +112,31 @@ namespace VersionedSerialization.Generator
 
         private static void GenerateReadMethod(CodeGenerator generator, ObjectSerializationInfo info)
         {
-            generator.EnterScope("public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader, allows ref struct");
+            // Generate generic Read method
+            generator.EnterScope("public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader");
 
             if (info.HasBaseType)
                 generator.AppendLine("base.Read(ref reader, in version);");
+
+            foreach (var property in info.Properties)
+            {
+                if (property.VersionConditions.Length > 0)
+                    GenerateVersionCondition(property.VersionConditions, generator);
+
+                generator.EnterScope();
+                generator.AppendLine($"this.{property.Name} = {property.ReadMethod}");
+                generator.LeaveScope();
+            }
+
+            generator.LeaveScope();
+            
+            generator.AppendLine();
+            
+            // Generate SpanReader-specific method for .NET 6 compatibility
+            generator.EnterScope("public void ReadFromSpan(ref SpanReader reader, in StructVersion version = default)");
+
+            if (info.HasBaseType)
+                generator.AppendLine("base.ReadFromSpan(ref reader, in version);");
 
             foreach (var property in info.Properties)
             {
@@ -289,7 +310,7 @@ namespace VersionedSerialization.Generator
 
                 sizeExpression ??= typeInfo.Type switch
                 {
-                    PropertyType.None => $"{typeInfo.ComplexTypeName}.Size(in version, is32Bit)",
+                    PropertyType.None => $"new {typeInfo.ComplexTypeName}().Size(in version, is32Bit)",
                     PropertyType.NativeInteger or PropertyType.UNativeInteger =>
                         "is32Bit ? sizeof(uint) : sizeof(ulong)",
                     _ => $"sizeof({typeInfo.Type.GetTypeName()})"

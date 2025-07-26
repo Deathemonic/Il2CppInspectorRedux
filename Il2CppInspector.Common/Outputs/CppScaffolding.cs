@@ -323,9 +323,9 @@ namespace Il2CppInspector.Outputs
         
         private void writeCode(string text) {
             if (_model.TargetCompiler == CppCompilerType.MSVC)
-                text = GccAlignRegex().Replace(text, @"__declspec(align($1))");
+                text = GccAlignRegex.Replace(text, @"__declspec(align($1))");
             else if (_model.TargetCompiler == CppCompilerType.GCC)
-                text = MsvcAlignRegex().Replace(text, @"__attribute__((aligned($1)))");
+                text = MsvcAlignRegex.Replace(text, @"__attribute__((aligned($1)))");
 
             var lines = text.Replace("\r", "").Split('\n');
             //var cleanLines = lines.Select(s => s.ToEscapedString()); Not sure if this is necessary? maybe for some obfuscated assemblies, but those would just fail on other steps
@@ -343,10 +343,8 @@ namespace Il2CppInspector.Outputs
 
         private void writeLine(string line) => _writer.WriteLine(line);
 
-        [GeneratedRegex(@"__attribute__\s*?\(\s*?\(\s*?aligned\s*?\(\s*?([0-9]+)\s*?\)\s*?\)\s*?\)")]
-        private static partial Regex GccAlignRegex();
+        private static readonly Regex GccAlignRegex = new(@"__attribute__\s*?\(\s*?\(\s*?aligned\s*?\(\s*?([0-9]+)\s*?\)\s*?\)\s*?\)");
 
-        [GeneratedRegex(@"__declspec\s*?\(\s*?align\s*?\(\s*?([0-9]+)\s*?\)\s*?\)")]
-        private static partial Regex MsvcAlignRegex();
+        private static readonly Regex MsvcAlignRegex = new(@"__declspec\s*?\(\s*?align\s*?\(\s*?([0-9]+)\s*?\)\s*?\)");
     }
 }

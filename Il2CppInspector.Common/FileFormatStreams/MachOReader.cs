@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NoisyCowStudios.Bin2Object;
+using VersionedSerialization;
 
 namespace Il2CppInspector
 {
@@ -332,8 +333,9 @@ namespace Il2CppInspector
 
                 var pointerFormat = (MachODyldChainedPtr)startsInfo.PointerFormat;
 
+                var defaultVersion = new StructVersion();
                 var pages = ReadPrimitiveArray<ushort>(
-                    startsBase + startOffset + MachODyldChainedStartsInSegment.Size(), startsInfo.PageCount);
+                    startsBase + startOffset + new MachODyldChainedStartsInSegment().Size(in defaultVersion, false), startsInfo.PageCount);
 
                 for (var i = 0; i < pages.Length; i++)
                 {

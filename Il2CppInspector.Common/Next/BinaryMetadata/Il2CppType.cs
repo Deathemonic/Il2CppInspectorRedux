@@ -1,6 +1,7 @@
 ﻿using Il2CppInspector.Next.Metadata;
 using System.Reflection;
 using VersionedSerialization;
+using VersionedSerialization.Attributes;
 
 namespace Il2CppInspector.Next.BinaryMetadata;
 
@@ -23,12 +24,17 @@ public record struct Il2CppType : IReadable
         public readonly Il2CppMetadataGenericParameterHandle GenericParameterHandle => Value;
         public readonly Pointer<Il2CppGenericClass> GenericClass => Value;
 
-        public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader, allows ref struct
+        public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader
         {
             Value = reader.ReadNUInt();
         }
 
-        public static int Size(in StructVersion version = default, bool is32Bit = false)
+        public void ReadFromSpan(ref SpanReader reader, in StructVersion version = default)
+        {
+            Value = reader.ReadNUInt();
+        }
+
+        public int Size(in StructVersion version = default, bool is32Bit = false)
         {
             return is32Bit ? 4 : 8;
         }
@@ -73,7 +79,7 @@ public record struct Il2CppType : IReadable
         set => Value = (Value & 0x7FFFFFFF) | (value ? 1u : 0u) << 31;
     }
 
-    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader, allows ref struct
+    public void Read<TReader>(ref TReader reader, in StructVersion version = default) where TReader : IReader
     {
         Data.Read(ref reader, version);
         Value = reader.ReadPrimitive<uint>();
@@ -98,9 +104,28 @@ public record struct Il2CppType : IReadable
         }
     }
 
-    public static int Size(in StructVersion version = default, bool is32Bit = false)
+    public void ReadFromSpan(ref SpanReader reader, in StructVersion version = default)
     {
-        return DataUnion.Size(version, is32Bit) + sizeof(uint);
+        Data.ReadFromSpan(ref reader, version);
+        Value = reader.ReadPrimitive<uint>();
+
+        if (MetadataVersions.V272 > version)
+        {
+            // Versions pre-27.2 had NumModifiers at 6 bits and no ValueType bit
+            var numModifiers = (Value >> 24) & 0b111111;
+
+            // Shift bits to new positions
+            Value = (Value & 0x00FFFFFF) | // Keep lower 24 bits
+                (numModifiers << 25) | // Shifted NumModifiers
+                (((Value >> 30) & 1) << 29) | // Shifted ByRef
+                (((Value >> 31) & 1) << 30) | // Shifted Pinned
+                0; // 0 ValueType
+        }
+    }
+
+    public int Size(in StructVersion version = default, bool is32Bit = false)
+    {
+        return new DataUnion().Size(version, is32Bit) + sizeof(uint);
     }
 
     public static Il2CppType FromTypeEnum(Il2CppTypeEnum type)

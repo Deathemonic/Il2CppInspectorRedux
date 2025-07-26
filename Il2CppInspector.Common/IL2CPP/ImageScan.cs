@@ -208,7 +208,9 @@ namespace Il2CppInspector
 
                 var codeGenEndPtr = codeRegVa + ptrSize;
                 // pCodeGenModules is the last field in CodeRegistration so we subtract the size of one pointer from the struct size
-                codeRegistration = codeGenEndPtr - (ulong)Il2CppCodeRegistration.Size(Image.Version, Image.Bits == 32);
+                var version = Image.Version;
+                var is32Bit = Image.Bits == 32;
+                codeRegistration = codeGenEndPtr - (ulong)new Il2CppCodeRegistration().Size(in version, is32Bit);
 
                 // In v24.3, windowsRuntimeFactoryTable collides with codeGenModules. So far no samples have had windowsRuntimeFactoryCount > 0;
                 // if this changes we'll have to get smarter about disambiguating these two.
@@ -216,7 +218,8 @@ namespace Il2CppInspector
 
                 if (Image.Version == MetadataVersions.V242 && cr.InteropDataCount == 0) {
                     Image.Version = MetadataVersions.V243;
-                    codeRegistration = codeGenEndPtr - (ulong)Il2CppCodeRegistration.Size(Image.Version, Image.Bits == 32);
+                    version = Image.Version;
+                    codeRegistration = codeGenEndPtr - (ulong)new Il2CppCodeRegistration().Size(in version, is32Bit);
                 }
 
                 if (Image.Version == MetadataVersions.V270 && cr.ReversePInvokeWrapperCount > 0x30000)
@@ -224,7 +227,8 @@ namespace Il2CppInspector
                     // If reversePInvokeWrapperCount is a pointer, then it's because we're actually on 27.1 and there's a genericAdjustorThunks pointer interfering.
                     // We need to bump version to 27.1 and back up one more pointer.
                     Image.Version = MetadataVersions.V271;
-                    codeRegistration = codeGenEndPtr - (ulong)Il2CppCodeRegistration.Size(Image.Version, Image.Bits == 32);
+                    version = Image.Version;
+                    codeRegistration = codeGenEndPtr - (ulong)new Il2CppCodeRegistration().Size(in version, is32Bit);
                     cr = Image.ReadMappedVersionedObject<Il2CppCodeRegistration>(codeRegistration);
                 }
 
@@ -234,7 +238,8 @@ namespace Il2CppInspector
                     (cr.InvokerPointersCount > 0x50000 || cr.ReversePInvokeWrapperCount > cr.ReversePInvokeWrappers))
                 {
                     Image.Version = MetadataVersions.V245;
-                    codeRegistration = codeGenEndPtr - (ulong)Il2CppCodeRegistration.Size(Image.Version, Image.Bits == 32);
+                    version = Image.Version;
+                    codeRegistration = codeGenEndPtr - (ulong)new Il2CppCodeRegistration().Size(in version, is32Bit);
                     cr = Image.ReadMappedVersionedObject<Il2CppCodeRegistration>(codeRegistration);
                 }
 
@@ -242,7 +247,8 @@ namespace Il2CppInspector
                     cr.GenericMethodPointersCount >= cr.GenericMethodPointers)
                 {
                     Image.Version = new StructVersion(Image.Version.Major, 0, MetadataVersions.Tag2022);
-                    codeRegistration = codeGenEndPtr - (ulong)Il2CppCodeRegistration.Size(Image.Version, Image.Bits == 32);
+                    version = Image.Version;
+                    codeRegistration = codeGenEndPtr - (ulong)new Il2CppCodeRegistration().Size(in version, is32Bit);
                 }
             }
 
@@ -272,7 +278,9 @@ namespace Il2CppInspector
 
             // Find TypeDefinitionsSizesCount (4th last field) then work back to the start of the struct
             // This saves us from guessing where metadataUsagesCount is later
-            var mrSize = (ulong)Il2CppMetadataRegistration.Size(Image.Version, Image.Bits == 32);
+            var mrVersion = Image.Version;
+            var mrIs32Bit = Image.Bits == 32;
+            var mrSize = (ulong)new Il2CppMetadataRegistration().Size(in mrVersion, mrIs32Bit);
             var typesLength = (ulong) metadata.Types.Length;
 
             vas = FindAllMappedWords(imageBytes, typesLength).Select(a => a - mrSize + ptrSize * 4);
