@@ -1,0 +1,4 @@
+[submodule "Il2CppInspectorRedux"]
+	path = Il2CppInspectorRedux
+	url = https://github.com/LukeFZ/Il2CppInspectorRedux
+	branch = new-ui
