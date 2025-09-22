@@ -53,6 +53,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: native-cli
+          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
