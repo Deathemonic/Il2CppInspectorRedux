@@ -1,6 +1,10 @@
 name: Release
 
 on:
+  push:
+    branches: [ native-cli ]
+  pull_request:
+    branches: [ native-cli ]
   workflow_dispatch:
     inputs:
       release-name:
