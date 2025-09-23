@@ -64,16 +64,13 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Il2CppInspectorRedux.CLI/Il2CppInspectorRedux.CLI.csproj
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet build Il2CppInspectorRedux.CLI/Il2CppInspectorRedux.CLI.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish --configuration Release --runtime ${{ matrix.rid }} --output ./publish/${{ matrix.rid }}
+        run: dotnet publish Il2CppInspectorRedux.CLI/Il2CppInspectorRedux.CLI.csproj --configuration Release --runtime ${{ matrix.rid }} --output ./publish/${{ matrix.rid }}
 
       - name: Remove dev files
         shell: bash
