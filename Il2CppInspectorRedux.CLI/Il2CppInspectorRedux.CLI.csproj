@@ -5,10 +5,10 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PublishAot>true</PublishAot>
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishTrimmed>false</PublishTrimmed>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <IlcDisableReflection>false</IlcDisableReflection>
-        <TrimMode>partial</TrimMode>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,10 +23,6 @@
 
     <ItemGroup>
         <ProjectReference Include="../Il2CppInspectorRedux/Il2CppInspector.Common/Il2CppInspector.csproj"/>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
     </ItemGroup>
 
 </Project>

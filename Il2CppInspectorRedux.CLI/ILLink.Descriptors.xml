@@ -1,7 +1,0 @@
-<linker>
-  <assembly fullname="Il2CppInspector.Common" preserve="all" />
-  <assembly fullname="Bin2Object" preserve="all" />
-  <assembly fullname="VersionedSerialization" preserve="all" />
-  <assembly fullname="dnlib" preserve="all" />
-  <assembly fullname="McMaster.NETCore.Plugins" preserve="all" />
-</linker>
