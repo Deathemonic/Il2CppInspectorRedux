@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <PublishSingleFile>true</PublishSingleFile>
     <!-- Plugins may require bass class library assemblies we're not using so disable trimming -->
     <PublishTrimmed>false</PublishTrimmed>
